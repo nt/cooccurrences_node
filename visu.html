@@ -68,12 +68,15 @@
                 data.nodes[i].x = oldies[i].x;
                 data.nodes[i].y = oldies[i].y;
               }
+              var weights = [];
+              data.nodes.forEach(function(y){weights.push(y.value);});
+              var scale = d3.scale.log()
+                            .domain([d3.min(weights), d3.max(weights)]).range([3,30]);
               force.nodes(data.nodes).links(data.links).start();
                   link.data(data.links)
-                    .attr("class", "link")
-                    .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+                    .attr("class", "link");
                   node.data(data.nodes)
-                    .attr("r", function(d) { return d.value; });
+                    .attr("r", function(d) { return scale(d.value); });
               node.append("svg:title")
                   .text(function(d) { return d.name; });
             })
