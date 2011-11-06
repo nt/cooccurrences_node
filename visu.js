@@ -45,17 +45,22 @@ var auth = 'Basic ' + new Buffer(pass).toString('base64');
 
 var data = {
   "nodes": [
-    { "name":"Sarkozy", "value":1 },
-    { "name":"Eva Joly", "value":1 },
-    { "name":"Hollande", "value":1 },
-    { "name":"Merkel", "value":1 },
-    { "name":"Obama", "value":1 },
-    { "name":"Mélenchon", "value":1 },
-    { "name":"Le Pen", "value":1 },
-    { "name":"Dupont Aignant", "value":1 },
-    { "name":"Natalie Arthaud", "value":1 },
-    { "name":"Chevenement", "value":1 },
-    { "name":"Boutin", "value":1 },
+    { "name":"Sarkozy", "value":0 },
+    { "name":"Eva Joly", "value":0 },
+    { "name":"Hollande", "value":0 },
+    { "name":"Merkel", "value":0 },
+    { "name":"Obama", "value":0 },
+    { "name":"Mélenchon", "value":0 },
+    { "name":"Le Pen", "value":0 },
+    { "name":"Dupont Aignant", "value":0 },
+    { "name":"Natalie Arthaud", "value":0 },
+    { "name":"Chevenement", "value":0 },
+    { "name":"Boutin", "value":0 },
+    { "name":"Nétanyahou", "value":0 },
+    { "name":"Papandreou", "value":0 },
+    { "name":"Berlusconi", "value":0 },
+    { "name":"Bieber", "value":0 },
+    { "name":"Steve Jobs", "value":0 },
   ],
   "links":
     []
@@ -97,7 +102,12 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
   console.error("BIGGGG: "+e);
 });
 
-
+setInterval(function(){
+  for(var i in data.nodes) {
+    data.nodes[i].value = Math.floor(data.nodes[i].value/2);
+  }
+  io.sockets.emit('refresh rate', data);
+}, 30*60*1000)
 
 
 io.sockets.on('connection', function (socket) {
