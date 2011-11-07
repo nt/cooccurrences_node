@@ -46,6 +46,7 @@ var auth = 'Basic ' + new Buffer(pass).toString('base64');
 var data = {
   "nodes": [
     { "name":"Sarkozy", "value":0 },
+    { "name":"Fillon", "value":0 },
     { "name":"Eva Joly", "value":0 },
     { "name":"Hollande", "value":0 },
     { "name":"Merkel", "value":0 },
