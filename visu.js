@@ -55,18 +55,21 @@ var data = {
     { "name":"Le Pen", "value":0 },
     { "name":"Dupont Aignant", "value":0 },
     { "name":"Natalie Arthaud", "value":0 },
-    { "name":"Chevenement", "value":0 },
+    { "name":"Chevènement", "value":0 },
     { "name":"Boutin", "value":0 },
     { "name":"Nétanyahou", "value":0 },
     { "name":"Papandreou", "value":0 },
     { "name":"Berlusconi", "value":0 },
-    { "name":"Bieber", "value":0 },
-    { "name":"Steve Jobs", "value":0 },
+    //{ "name":"Bieber", "value":0 },
+    //{ "name":"Steve Jobs", "value":0 },
   ],
   "links":
     []
 }
 
+var Links = require('./links')
+var links = new Links(data.nodes.length);
+links.set_to_zeros();
 var query = "";
 for(var i in data.nodes){
   query+=encodeURIComponent(data.nodes[i].name)+",";
@@ -79,21 +82,30 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
     try{
       var o = JSON.parse(d);
       var detected = false;
+      var a = -1;
+      var b = -1;
       for(var i in data.nodes) {
         if(o.text.toLowerCase().indexOf(data.nodes[i].name.toLowerCase())!=-1){
           console.log(data.nodes[i].name + " détecté dans: "+o.text);
           data.nodes[i].value += 1;
           detected = true;
+          if(a==-1){ a=i;}
+          else{b=i;}
         }
+      }
+      if(b != -1){
+        links.incr_links(a,b);
       }
       if(!detected) {
         console.error('n\'a rie détecté dans '+o.text);
       }
       else{
+        data.links = links.to_protovis();
         io.sockets.emit('refresh data', data);
         io.sockets.emit('last tweet', o.text);
       }
     }
+    
     catch(err) {
       console.error(err);
     }
