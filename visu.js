@@ -40,16 +40,16 @@ var db = require('mongojs').connect(databaseURL, ['rates']);
 
 var data = {
   "nodes": [
-    { "name":"Sarkozy", "value":0 },
-    { "name":"Fillon", "value":0 },
-    { "name":"Eva Joly", "value":0 },
-    { "name":"Hollande", "value":0 },
+    { "name":"Nicolas Sarkozy", "keywords": ["sarkozy", "nsarkozy", "nicolassarkozy"], "value":0 },
+    { "name":"Eva Joly", "keywords": ["joly", "ejoly", "evajoly"], "value":0 },
+    { "name":"François Hollande", "keywords": ["hollande", "fhollande", "francoishollande"], "value":0 }
+/*
     { "name":"Merkel", "value":0 },
     { "name":"Obama", "value":0 },
     { "name":"Mélenchon", "value":0 },
     { "name":"Le Pen", "value":0 },
     { "name":"Dupont Aignant", "value":0 },
-    { "name":"Natalie Arthaud", "value":0 },
+    { "name":"Natalie Arthau", "value":0 },
     { "name":"Chevenement", "value":0 },
     { "name":"Boutin", "value":0 },
     { "name":"Nétanyahou", "value":0 },
@@ -57,6 +57,7 @@ var data = {
     { "name":"Berlusconi", "value":0 },
     //{ "name":"Bieber", "value":0 },
     //{ "name":"Steve Jobs", "value":0 },
+*/
   ]
 }
 
@@ -75,7 +76,8 @@ setInterval(function(){
 
 var query = "";
 for(var i in data.nodes){
-  query+=encodeURIComponent(data.nodes[i].name)+",";
+	for(var j in data.nodes[i].keywords)
+  query+=encodeURIComponent(data.nodes[i].keywords[j])+",";
 }
 query=query.slice(0, query.length-1);
 console.log(query);
@@ -86,11 +88,13 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
       var o = JSON.parse(d);
       var detected = false;
       for(var i in data.nodes) {
-        if(o.text.toLowerCase().indexOf(data.nodes[i].name.toLowerCase())!=-1){
-          console.log(data.nodes[i].name + " détecté dans: "+o.text);
-          data.nodes[i].value += 1;
-          detected = true;
-        }
+				for(var j in data.nodes[i].keywords)
+        	if(o.text.toLowerCase().indexOf(data.nodes[i].keywords[j].toLowerCase())!=-1){
+          	console.log(data.nodes[i].keywords[j] + " détecté dans: "+o.text);
+          	data.nodes[i].value += 1;
+          	detected = true;
+						break;
+        	}
       }
       if(!detected) {
         console.error('n\'a rie détecté dans '+o.text);
