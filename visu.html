@@ -35,6 +35,7 @@
       left: 460px;
     }
   </style>
+  <!--
 	<script type="text/javascript" charset="utf-8">
 
     $(function(){
@@ -118,11 +119,55 @@
     })
     
 	</script>
-	<!-- Date: 2011-11-05 -->
+	--><!-- Date: 2011-11-05 -->
+	<script type="text/javascript" charset="utf-8">
+	  var extract_data = function(data){
+	    var m = data.nodes[0].serie.length;
+	    return d3.range(data.nodes.length).map(function(i){
+	      return d3.range(m).map(function(j){
+	        return data.nodes[i].serie[j];
+	      });
+	    });
+	  }
+	  $(function(){
+	    var w=900;
+	    var h=400;
+	    var color = d3.interpolateRgb("#aad", "#556");
+      var vis = d3.select("#chart")
+         .append("svg:svg")
+         .attr("width", w)
+         .attr("height", h);
+      var x = d3.scale.linear().range([0, w]),
+          y = d3.scale.linear().range([h, 0]);
+          var mx = 200,
+              my = 30;
+          var area = d3.svg.area()
+              .x(function(d) { return d.x * w / mx; })
+               .y0(function(d) { return h - d.y0 * h / my; })
+               .y1(function(d) { return h - (d.y + d.y0) * h / my; });
+      var socket = io.connect();
+      socket.on('series update', function(data){
+        /*
+        var tmp = [];
+        for(var i=0;i<data.nodes.length;i++){
+          tmp.push(data.nodes[i].serie);
+        }*/
+
+        var d = d3.layout.stack().offset("wiggle")(extract_data(data));
+        console.log(d);
+        vis.selectAll("path")
+             .data(d)
+             .enter().append("svg:path")
+              .style("fill", function() { return color(Math.random()); }).attr("d", area);
+             //.values(function(d){d.series});
+      })
+         
+	  });
+	</script>
 </head>
 <body>
   <div id="chart"></div>
-  <div style="width:600px"><b>Dernier tweet  </b><small><span id='lasttweet'></span></small></div>
-  <div id='rates'></div>
+  <!--<div style="width:600px"><b>Dernier tweet  </b><small><span id='lasttweet'></span></small></div>
+  <div id='rates'></div>-->
 </body>
 </html>

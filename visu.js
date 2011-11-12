@@ -45,27 +45,34 @@ var auth = 'Basic ' + new Buffer(pass).toString('base64');
 
 var data = {
   "nodes": [
-    { "name":"Sarkozy", "value":0 },
-    { "name":"Fillon", "value":0 },
-    { "name":"Eva Joly", "value":0 },
-    { "name":"Hollande", "value":0 },
-    { "name":"Merkel", "value":0 },
-    { "name":"Obama", "value":0 },
-    { "name":"Mélenchon", "value":0 },
-    { "name":"Le Pen", "value":0 },
-    { "name":"Dupont Aignant", "value":0 },
-    { "name":"Natalie Arthaud", "value":0 },
-    { "name":"Chevenement", "value":0 },
-    { "name":"Boutin", "value":0 },
-    { "name":"Nétanyahou", "value":0 },
-    { "name":"Papandreou", "value":0 },
-    { "name":"Berlusconi", "value":0 },
-    { "name":"Bieber", "value":0 },
-    { "name":"Steve Jobs", "value":0 },
-  ],
-  "links":
-    []
+    { "name":"Sarkozy", "value":0, "serie": [0] },
+    { "name":"Fillon", "value":0, "serie": [0] },
+    { "name":"Eva Joly", "value":0, "serie": [0] },
+    { "name":"Hollande", "value":0, "serie": [0] },
+    { "name":"Merkel", "value":0, "serie": [0] },
+    { "name":"Obama", "value":0, "serie": [0] },
+    { "name":"Mélenchon", "value":0, "serie": [0] },
+    { "name":"Le Pen", "value":0, "serie": [0] },
+    { "name":"Dupont Aignant", "value":0, "serie": [0] },
+    { "name":"Natalie Arthaud", "value":0, "serie": [0] },
+    { "name":"Chevenement", "value":0, "serie": [0] },
+    { "name":"Boutin", "value":0, "serie": [0] },
+    { "name":"Nétanyahou", "value":0, "serie": [0] },
+    { "name":"Papandreou", "value":0, "serie": [0] },
+    { "name":"Berlusconi", "value":0, "serie": [0] },
+    //{ "name":"Bieber", "value":0, "serie": [0] },
+    //{ "name":"Steve Jobs", "value":0, "serie": [0] },
+  ]
 }
+
+var serie_count = 0;
+setInterval(function(){
+  for(var i in data.nodes) {
+    data.nodes[i].serie.push(0) ;
+  }
+  serie_count++;
+  io.sockets.emit('series update', data);
+}, 5*1000)
 
 var query = "";
 for(var i in data.nodes){
@@ -83,6 +90,7 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
         if(o.text.toLowerCase().indexOf(data.nodes[i].name.toLowerCase())!=-1){
           console.log(data.nodes[i].name + " détecté dans: "+o.text);
           data.nodes[i].value += 1;
+          data.nodes[i].serie[serie_count]++;
           detected = true;
         }
       }
@@ -90,8 +98,8 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
         console.error('n\'a rie détecté dans '+o.text);
       }
       else{
-        io.sockets.emit('refresh data', data);
-        io.sockets.emit('last tweet', o.text);
+        //io.sockets.emit('refresh data', data);
+        //io.sockets.emit('last tweet', o.text);
       }
     }
     catch(err) {
@@ -102,13 +110,6 @@ https.get({ host: 'stream.twitter.com', path: '/1/statuses/filter.json?track='+q
 }).on('error', function(e) {
   console.error("BIGGGG: "+e);
 });
-
-setInterval(function(){
-  for(var i in data.nodes) {
-    data.nodes[i].value = Math.floor(data.nodes[i].value/2);
-  }
-  io.sockets.emit('refresh rate', data);
-}, 30*60*1000)
 
 
 io.sockets.on('connection', function (socket) {
