@@ -35,8 +35,8 @@ var https = require('https');
 var pass = process.env.TWITTER_PASS || 'username:password';
 var auth = 'Basic ' + new Buffer(pass).toString('base64');
 
-var politiciansMetabaseURL = process.env.MONGOHQ_URL || 'politiciansMetaviz';
-var db = require('mongojs').connect(politiciansMetabaseURL, ['twitts']);
+var databaseURL = process.env.MONGOHQ_URL || 'dataviz';
+var db = require('mongojs').connect(databaseURL, ['twitts']);
 
 var politiciansMeta = {
   "nodes": [
