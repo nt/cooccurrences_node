@@ -1,1 +1,3 @@
+Disclaimer: this hack was coded against Twitter API v1.0 wich is now deprecated :( I would need to put some time in again to make it work.
+
 This code is explained in this "blog post":http://nt.github.com/2011/12/04/visualisation-de-twitter-en-live-avec-nodejs.html
